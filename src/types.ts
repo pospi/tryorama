@@ -34,7 +34,7 @@ export type ConfigSeed = (args: ConfigSeedArgs) => IntermediateConfig
 
 export type PartialConfigSeedArgs = {
   adminInterfacePort: number,
-  appInterfacePort?: number,
+  appInterfacePort: number,
   configDir: string,
 }
 export type CommonConfig = {

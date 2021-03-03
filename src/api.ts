@@ -126,7 +126,7 @@ export class ScenarioApi {
   }
 
   _createTrycpPlayerBuilder = async (trycpClient: TrycpClient, playerName: string, configSeed: T.ConfigSeed): Promise<PlayerBuilder> => {
-    const configJson = this._generateConfigFromSeed({ adminInterfacePort: 0, configDir: "unused" }, playerName, configSeed)
+    const configJson = await this._generateConfigFromSeed({ adminInterfacePort: 0, appInterfacePort: 0, configDir: "unused" }, playerName, configSeed)
     return async () => {
       // FIXME: can we get this from somewhere?
       await trycpClient.configurePlayer(playerName, configJson)
@@ -146,10 +146,19 @@ export class ScenarioApi {
   _createLocalPlayerBuilder = async (playerName: string, configSeed: T.ConfigSeed): Promise<PlayerBuilder> => {
     return async () => {
       const partialConfigSeedArgs = await localConfigSeedArgs()
-      const configYaml = this._generateConfigFromSeed(partialConfigSeedArgs, playerName, configSeed)
-      const { adminInterfacePort, appInterfacePort, configDir } = partialConfigSeedArgs
-      await fs.writeFile(getConfigPath(configDir), YAML.stringify(configYaml))
+      console.log("---->", configSeed);
 
+      const configYaml = await this._generateConfigFromSeed(partialConfigSeedArgs, playerName, configSeed)
+      let { admin_interfaces, app_interfaces, environment_path: configDir } = configYaml
+      await fs.writeFile(getConfigPath(configDir), YAML.stringify(configYaml))
+      let adminInterfacePort: number = 0;
+      if(admin_interfaces) {
+        adminInterfacePort = admin_interfaces[0].driver.port
+      }
+      let appInterfacePort: number = 0;
+      if(app_interfaces) {
+        appInterfacePort = app_interfaces[0].driver.port
+      }
       logger.debug('api.players: player config committed for %s', playerName)
       return new Player({
         scenarioUUID: this._uuid,
@@ -163,14 +172,18 @@ export class ScenarioApi {
     }
   }
 
-  _generateConfigFromSeed = (partialConfigSeedArgs: T.PartialConfigSeedArgs, playerName: string, configSeed: T.ConfigSeed): T.RawConductorConfig => {
+  _generateConfigFromSeed = async (partialConfigSeedArgs: T.PartialConfigSeedArgs, playerName: string, configSeed: T.ConfigSeed): Promise<T.RawConductorConfig> => {
+    console.log("PArtialArgs:::", partialConfigSeedArgs);
+
     const configSeedArgs: T.ConfigSeedArgs = _.assign(partialConfigSeedArgs, {
       scenarioName: this.description,
       playerName,
       uuid: this._uuid
     })
     logger.debug('api.players: seed args generated for %s = %j', playerName, configSeedArgs)
-    const configJson = configSeed(configSeedArgs)
+    const configJson = await configSeed(configSeedArgs)
+    console.log("---------->", configJson);
+
     logger.debug("built config: %s", JSON.stringify(configJson))
     if (!configJson.environment_path) {
       throw new Error("Generated config does not have environment_path set")

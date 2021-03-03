@@ -98,7 +98,7 @@ export const spawnLocal = (configDir: string, adminPort: number, appPort?: numbe
         type: "local",
         machineHost: "localhost",
         adminInterfacePort: adminPort,
-        appInterfacePort: appPort
+        appInterfacePort: appPort || 0
       },
     })
 

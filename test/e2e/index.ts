@@ -25,20 +25,20 @@ const localOrchestrator = (extra = {}) => new Orchestrator({
 
 testAlwaysOn(localOrchestrator, () => testConfig(dnaLocationLocal))
 // testAlwaysOn(singleConductorOrchestrator, () => testConfig(dnaLocationLocal))
-testDynamicOn(localOrchestrator, () => testConfig(dnaLocationLocal))
-testSignal(localOrchestrator, () => testConfig(dnaLocationLocal))
+// testDynamicOn(localOrchestrator, () => testConfig(dnaLocationLocal))
+// testSignal(localOrchestrator, () => testConfig(dnaLocationLocal))
 
-const trycp = run_trycp()
-const playersRemote = async (s, configs, startup?) => {
-  await trycp
-  return await s.players(configs, startup, `localhost:${PORT}`, false)
-};
-
-testRemote(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
-testAlwaysOn(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
-// testAlwaysOn(singleConductorOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
-testDynamicOn(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
-testSignal(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
-tape("killing trycp", async () => {
-  (await trycp).kill()
-})
+// const trycp = run_trycp()
+// const playersRemote = async (s, configs, startup?) => {
+//   await trycp
+//   return await s.players(configs, startup, `localhost:${PORT}`, false)
+// };
+//
+// testRemote(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
+// testAlwaysOn(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
+// // testAlwaysOn(singleConductorOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
+// testDynamicOn(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
+// testSignal(localOrchestrator, () => testConfig(dnaLocationLocal), playersRemote)
+// tape("killing trycp", async () => {
+//   (await trycp).kill()
+// })

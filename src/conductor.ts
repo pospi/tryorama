@@ -28,6 +28,7 @@ type ConstructorArgs = {
     type: "local",
     machineHost: string,
     adminInterfacePort: number,
+    appInterfacePort: number,
   } | {
     type: "trycp",
     adminInterfaceCall: (req: any) => Promise<any>,
@@ -230,6 +231,7 @@ export class Conductor {
     // defaults to 0 if no appInterface is provided in config
     // 0 in this case means use any open port
     const { port: appInterfacePort } = await this.adminClient!.attachAppInterface({ port: appPortNumber || 0 })
+    console.log("--------->");
 
     switch (this._backend.type) {
       case "local":
